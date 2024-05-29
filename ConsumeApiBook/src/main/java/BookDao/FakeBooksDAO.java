@@ -1,5 +1,9 @@
 package BookDao;
 
+import BookModel.BooksResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,18 +15,22 @@ public class FakeBooksDAO {
 
     public static final String BASE_URL = "https://fakerapi.it/api/v1/books";
 
-    public static void getBooks(){
+    public static BooksResult getBooks(String quantity) throws JsonProcessingException {
+
+        HttpResponse<String> response = null;
+        ObjectMapper mapper = new ObjectMapper();
 
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI( BASE_URL+ "?_quantity=1"))
+                    .uri(new URI( BASE_URL+ "?_quantity=" +quantity))
                     .GET()
                     .build();
-            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+             response = client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(response.body());
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+        return mapper.readValue(response.body(), BooksResult.class);
     }
 }
