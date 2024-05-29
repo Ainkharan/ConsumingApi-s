@@ -13,9 +13,9 @@ import java.net.http.HttpResponse;
 
 public class FakeBooksDAO {
 
-    public static final String BASE_URL = "https://fakerapi.it/api/v1/books";
+    public static final String BASE_URL = "https://fakerapi.it/api/v1/credit_cards";
 
-    public static BooksResult getBooks(String quantity) throws JsonProcessingException {
+    public static BooksResult getBooks(String quantity, String local) throws JsonProcessingException {
 
         HttpResponse<String> response = null;
         ObjectMapper mapper = new ObjectMapper();
@@ -23,7 +23,7 @@ public class FakeBooksDAO {
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI( BASE_URL+ "?_quantity=" +quantity))
+                    .uri(new URI( BASE_URL+ "?_quantity=" +quantity+ "&_locale=" +local ))
                     .GET()
                     .build();
              response = client.send(request, HttpResponse.BodyHandlers.ofString());
