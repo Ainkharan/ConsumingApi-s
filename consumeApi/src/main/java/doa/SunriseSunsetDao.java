@@ -1,5 +1,9 @@
 package doa;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import model.Result;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,18 +15,23 @@ public class SunriseSunsetDao {
 
     private static final String BASE_URL = "https://api.sunrisesunset.io/json";
 
-    public static void getSunriseSunset(){
+    public static Result getSunriseSunset(String longitude, String latitude) throws JsonProcessingException {
 
-        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = null;
+        ObjectMapper mapper = new ObjectMapper();
+
         try {
-            HttpRequest request = HttpRequest.newBuilder(new URI(BASE_URL))
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(BASE_URL+ "?lat=" +latitude+ "&lng="+longitude))
                     .GET()
                     .build();
-            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+           // System.out.println(response.body());
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+        return mapper.readValue(response.body(), Result.class);
 
     }
 }
